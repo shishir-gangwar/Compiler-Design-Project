@@ -1,0 +1,9 @@
+int main(){
+	
+	printf("sadfsaf");
+	int a=1;
+	long int b=1;
+	a = a+1;
+	long long int c=1;
+	return 0;
+}
