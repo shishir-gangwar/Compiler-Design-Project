@@ -1,0 +1,18 @@
+#include<stdio.h>
+int main()
+{
+	int N;
+	
+	char 0abc;
+	
+	N = 123.32;
+	
+	float R = 123.00;
+	
+	float W = .090;
+	
+	return 0;
+}
+/*
+Expected output : The expected output of the following program is that it will show errors where N=123.32 is declared because N is defined of integer data type and it is assigned to a float data type.Also float W =.090 will also show error because a floating point number cannot start from decimal value ‘ . ’.  0abc is also not an identifier.
+*/

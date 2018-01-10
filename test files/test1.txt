@@ -1,0 +1,25 @@
+﻿#include<stdio.h>
+int main()
+{
+	int a;
+	int b;
+	
+	scanf("%d%d",&a,&b);
+	int product=a*b;
+	
+	int sum=a+b;
+	
+	int difference = a-b;
+	
+	if(a!=0)
+	{
+		double divide = b/a;	
+	}
+	
+	return 0;
+}
+
+/*
+Expected output : 
+This code should not show any errors and it should display all the operators , variables , keywords , etc.
+*/
