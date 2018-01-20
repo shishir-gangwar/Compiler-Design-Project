@@ -5,5 +5,11 @@ int main(){
 	long int b=1;
 	a = a+1;
 	long long int c=1;
+	while(){
+
+	}
+	if(){
+	
+	}
 	return 0;
 }

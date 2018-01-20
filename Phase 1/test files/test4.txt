@@ -1,0 +1,11 @@
+//5 test case :
+#include"stdio.h"
+int main()
+{
+”
+// single comment
+/* multi line comment */
+/*/
+}
+
+// Expected output: the code has an error for illegal character '”'

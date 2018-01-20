@@ -1,0 +1,18 @@
+#include<stdio.h>
+int main()
+{
+	int N;
+	
+	char 0abc;
+	
+	N = 123.32;
+	
+	float R = 123.00;
+	
+	float W = .090;
+	
+	return 0;
+}
+/*
+Expected output : No error. 'Oabc' will be tokenized as '0' and 'abc' and passed to parser. Parser will then declare it as syntax error.
+*/
