@@ -1,0 +1,19 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+void find_product(int a,int b)
+{
+	
+	int c=a*b;
+	
+	printf("Product is %d",c);
+}
+
+int main()
+{
+	int a=10,b=10;
+	
+	find_product(a,);
+	
+	return 0;
+}

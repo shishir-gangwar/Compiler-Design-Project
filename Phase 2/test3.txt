@@ -1,0 +1,15 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main()
+{
+	int i,j,k;
+	k=10;
+	
+	do{
+		k--;
+		printf(" Compiler lab ");
+	}while(k>0)
+	
+	return 0;
+}
