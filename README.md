@@ -3,8 +3,6 @@
 #### Shishir Gangwar  - 15CO147
 #### Saumyadip Mandal - 15CO144
 
-### Phase 1
-
 We propose to implement the following things in implementation of first phase for compiler design:
 
 1) Data types : int , long int ,long long int
