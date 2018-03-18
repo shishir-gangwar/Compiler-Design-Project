@@ -1,0 +1,6 @@
+#include<stdio.h>
+int fun(int x);
+int fun(float x){
+	
+}
+int arr[100];

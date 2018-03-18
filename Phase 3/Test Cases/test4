@@ -1,0 +1,13 @@
+#include<stdio.h>
+int main(){
+	int x;
+	while(x){
+		double z;
+		{
+			int y;
+		}
+	}
+	{
+		int x;
+	}
+}

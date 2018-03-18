@@ -1,0 +1,11 @@
+#include<stdio.h>
+int a(int x,int z);
+
+int a(int x,int y){
+	float b;
+}
+
+int main(){
+	int x,y;
+	int short;
+}

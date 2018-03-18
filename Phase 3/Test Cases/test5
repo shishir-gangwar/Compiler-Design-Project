@@ -1,0 +1,6 @@
+#include<stdio.h>
+int a(int);
+int a(int x);
+int a(int x){
+	
+}
