@@ -19,7 +19,7 @@
 	extern string str;
 	extern string func;
     extern int lineno;
-    int ff=0,fflag=0;
+    int ff=0,fflag=0,dd=0;
 %}
 
 %union{
@@ -101,12 +101,12 @@ start:            function {temp = head; func = "";} start
 
 			decllist:        ID assign { insVar("variable",str,$<s>1,lineno,charcount);} ',' decllist 
 			|                ID assign { insVar("variable",str,$<s>1,lineno,charcount);}
-			|                arraydecl ',' decllist
-			|                arraydecl 
-			|                ID arraydecl'=' '{' arrassign '}' { insVar("variable",str,$<s>1,lineno,charcount);}
+			|                ID arraydecl ',' decllist	{ insVar("variable",str,$<s>1,lineno,charcount);checkDim();cout << dd << "sf";fargs.clear();dd=0;}
+			|                ID arraydecl 	{ insVar("variable",str,$<s>1,lineno,charcount);checkDim();cout << dd << "sf";fargs.clear();dd=0;}
+			|                ID arraydecl'=' '{' arrassign '}' { insVar("variable",str,$<s>1,lineno,charcount);checkDim();fargs.clear();dd=0;}
 			;
-				arraydecl:      '[' const ']' arraydecl	
-				|				'[' const ']' 
+				arraydecl:      '[' const ']' {++dd;} arraydecl		
+				|				'[' const ']' 				{++dd;}
 				;
 				arrassign:		NUM ',' arrassign
 				|               NUM 
@@ -125,7 +125,7 @@ stmt:            compstmt
 |                ';'
 ;    
 
-	compstmt:        '{' { if(temp!=head && temp->first!=1) insVar("block","null","	null",lineno,charcount,true); else if(temp!=head) ++temp->first;} stmtlist '}' {if(temp!=head)temp = temp->parent;}	
+	compstmt:        '{' { if(temp!=head && temp->first!=1) insVar("_block_","null","	null",lineno,charcount,true); else if(temp!=head) ++temp->first;} stmtlist '}' {if(temp!=head)temp = temp->parent;}	
 	;
 
 		stmtlist:        stmt stmtlist
@@ -149,13 +149,13 @@ stmt:            compstmt
 	ifstmt:            IF '(' expr ')' stmt 
 	;
 
-	returnstmt:      RETURN ';' 
-	|                RETURN expr ';'
+	returnstmt:      RETURN ';' 	{checkReturn(1);}
+	|                RETURN expr ';'{checkReturn(0);}
 	;
 
 	
 
-functcall:       ID {fname = $<s>1;}  '(' argdecls ')'   {paramcheck();}
+functcall:       ID  '(' argdecls ')'   {fname=$<s>1;paramcheck();}
 ;
 
 	argdecls:		argdecl 	
@@ -170,19 +170,19 @@ functcall:       ID {fname = $<s>1;}  '(' argdecls ')'   {paramcheck();}
 
 
 expr :            '(' expr ')'
-|                ID "+=" expr  	{scope($<s>1,charcount);}| ID "+=" error 
-|                ID "-=" expr  	{scope($<s>1,charcount);}| ID "-=" error
-|                ID "*=" expr  	{scope($<s>1,charcount);}| ID "*=" error
-|                ID "/=" expr  	{scope($<s>1,charcount);}| ID "/=" error
-|                ID '=' expr   	{scope($<s>1,charcount);}| ID '=' error
+|                ID "+=" expr  	{scope(temp,$<s>1,charcount);}| ID "+=" error 
+|                ID "-=" expr  	{scope(temp,$<s>1,charcount);}| ID "-=" error
+|                ID "*=" expr  	{scope(temp,$<s>1,charcount);}| ID "*=" error
+|                ID "/=" expr  	{scope(temp,$<s>1,charcount);}| ID "/=" error
+|                ID '=' expr   	{scope(temp,$<s>1,charcount);}| ID '=' error
 |                expr '+' expr 	{}| expr '+' error
 |                expr '-' expr 	{}| expr '-' error
 |                expr '*' expr 	{}| expr '*' error
 |                expr '/' expr 	{}| expr '/' error
 |                expr '<' expr 	{}| expr '<' error
 |                expr '>' expr 	{}| expr '>' error
-|                "++" ID		{scope($<s>1,charcount);}|	"++" error
-|				 "--" ID  		{scope($<s>1,charcount);}|	"--" error
+|                "++" ID		{scope(temp,$<s>1,charcount);}|	"++" error
+|				 "--" ID  		{scope(temp,$<s>1,charcount);}|	"--" error
 |                expr "<<" expr {}| expr "<<" error
 |                expr ">>" expr {}| expr ">>" error
 |                expr "==" expr {}| expr "==" error
@@ -191,12 +191,12 @@ expr :            '(' expr ')'
 |                expr "<=" expr {}| expr "<=" error
 |                expr "||" expr {}| expr "||" error
 |                expr "&&" expr {}| expr "&&" error
-|                ID '=' functcall {scope($<s>1,charcount);}
+|                ID '=' functcall {scope(temp,$<s>1,charcount);}
 |                '-' expr  %prec '!' 	{}| '-' error
-|                ID "++" {scope($<s>1,charcount);}
-|				 ID "--" {scope($<s>1,charcount);}
+|                ID "++" {scope(temp,$<s>1,charcount);}
+|				 ID "--" {scope(temp,$<s>1,charcount);}
 |                '!' expr  {}
-|                ID  {scope($<s>1,charcount);}
+|                ID  {scope(temp,$<s>1,charcount);}
 |                NUM {}
 |				 STR {}
 ;
@@ -227,6 +227,7 @@ int main(int argc, char *argv[])
     else
         cout << "\nParsing failed\n";
     print(head);
+    printformat(head);
     fclose(yyin);
     return 0;
 }
