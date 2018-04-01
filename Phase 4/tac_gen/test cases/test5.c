@@ -1,0 +1,19 @@
+﻿#include<stdio.h>
+
+void find_max(long int x,long int y)
+{
+	if ( a > b )
+	{	printf ("a is greater\n");
+	}
+	else
+	{	printf ("b is greater\n");
+}
+}
+int main()
+{
+	long int A[2];
+	A[1] = 2; 
+	A[0] = 3;
+	find_max(A[1],A[0]);
+	return 0;	
+}
