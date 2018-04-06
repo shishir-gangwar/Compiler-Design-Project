@@ -9,6 +9,11 @@ extern int first,lno;
 extern int charcount;
 extern int fflag,dd;
 
+map<int,vector<int> >mp;
+map<int,int>mpf;
+map<string,int>mpfuncf;
+map<string,vector<int> >mpfunc;
+int address=100,addr=100;
 template <typename T>
 string to_string(T val)
 {
@@ -55,19 +60,25 @@ bool is_operator(string a){
 }
 int j=0;
 int ifk=0;
-void tac_if(int x){
+int tac_if(int x,int ifkk=0){
 	if(x){
 		string label = "_L"+to_string(ifk);
-		string cc = "IfZ "+last+" Goto "+ label+";";
-		commands.push_back(cc);
+		string cc = "IfZ "+last+" Goto ";
+		commands.push_back(cc);++addr;
+		mp[ifk].push_back(commands.size()-1);
+		++ifk;
+		return (ifk-1);
 	}
 	else{
-		string label = "_L"+to_string(ifk);
+		string label = "_L"+to_string(ifkk);
 		string cc =  "Goto "+label+";";
-	//	commands.push_back(cc);
-		label = "_L"+to_string(ifk-1);
+		label = "_L"+to_string(ifkk);
 		cc =  label+":";
+		for(int i=0;i<mp[ifkk].size();++i){
+			commands[mp[ifkk][i]]+=to_string(addr);
+		}
 		commands.push_back(cc);
+		++addr;
 	}
 	++ifk;
 }
@@ -83,7 +94,7 @@ void tac_ret(){
 		  		string y = a.back();a.pop_back();	
 				string cc = y +" "+ op +" "+ x +";";
 				a.push_back(y);
-				commands.push_back(cc);
+				commands.push_back(cc);++addr;
 				continue;
 			}
 			// cout << a.back() << " ";
@@ -95,7 +106,7 @@ void tac_ret(){
 		  			string t = "_t" + to_string(j);
 		//  			cout << t << " ";
 		  			string cc = t + " = " + x +";"; 
-		  			commands.push_back(cc);
+		  			commands.push_back(cc);++addr;
 		  			x = t;
 		  			++j;
 		  		}
@@ -103,7 +114,7 @@ void tac_ret(){
 		  			string t = "_t" + to_string(j);
 		//  			cout << t << " ";
 		  			string cc = t + " = " + y +";"; 
-		  			commands.push_back(cc);
+		  			commands.push_back(cc);++addr;
 		  			y = t;
 		  			++j;
 		  		}	
@@ -112,7 +123,7 @@ void tac_ret(){
 	//	  	cout << t << " ";
 		  	a.push_back(t);
 		 	string cc = t + " = " + y +" "+ op +" "+ x +";"; 
-		  	commands.push_back(cc);
+		  	commands.push_back(cc);++addr;
 		  	last = t;
 		  	++j;
 		}
@@ -120,7 +131,7 @@ void tac_ret(){
 	if(a.size()){
 		string cc = a.back();
 		cc = "_ra = " + cc +";"; 
-		commands.push_back(cc);
+		commands.push_back(cc);++addr;
 	}
 	ans.clear();
 	cout << endl;
@@ -129,19 +140,27 @@ void tac_call(string s,int x=1,int fl=0){
 	if(x){
 		string t = "_t" + to_string(j);
 		string cc = t + " = " + s + ";";
-		commands.push_back(cc);
+		commands.push_back(cc);++addr;
 		cc = "PushParam "+t+";";
-		commands.push_back(cc);
+		commands.push_back(cc);++addr;
 		++j;
 	}
 	else{
 		string cc = "LCall " + s+";";
-		commands.push_back(cc);
+		if(mpfuncf[s])
+			cc+=to_string(mpfuncf[s]);
+		mpfunc[s].push_back(commands.size());
+		if(mpfuncf[s]){
+			for(int i=0;i<mpfunc[func].size();++i){
+				commands[mpfunc[func][i]]+=to_string(addr)+";";
+			}
+		}
+		commands.push_back(cc);++addr;
 		int k1=j-1;
 		if(fl){
 			for(int i=0;(i<temp2->token.size() && temp2->token[i]=="argument");++i){
 				cc = "PopParam _t" + to_string(k1)+";";
-				commands.push_back(cc);
+				commands.push_back(cc);++addr;
 				k1--;
 			}
 		}
@@ -151,40 +170,61 @@ int tac_while(int x,int val=0){
 	if(x==1){
 		string label = "_L"+to_string(ifk);
 		string cc = label+":";
-		commands.push_back(cc);
+		mpf[ifk]=addr;
+		commands.push_back(cc);++addr;
 		++ifk;
 		return (ifk-1);
 	}
 	else if(x==2){
-		string label = "_L"+to_string(ifk);
-		string cc = "IfZ "+last+" Goto "+ label+";";
-		commands.push_back(cc);
+		string label = "_L"+to_string(ifk)+":";
+		string cc = "IfZ "+last+" Goto "+ label +";";
+		mp[ifk].push_back(commands.size());
+		commands.push_back(cc);++addr;
 		++ifk;
 	}
 	else{
-		string label = "_L"+to_string(val);
+		string label = "_L"+to_string(val)+":"+to_string(mpf[val]);
 		string cc =  "Goto "+label+";";
-		commands.push_back(cc);
-		label = "_L"+to_string(ifk-1);
+		mp[val].push_back(commands.size());
+		commands.push_back(cc);++addr;
+		label = "_L"+to_string(val+1);
 		cc =  label+":";
-		commands.push_back(cc);
+		for(int i=0;i<mp[val+1].size();++i){
+			commands[mp[val+1][i]]+=to_string(addr)+";";
+		}
+		commands.push_back(cc);++addr;
 	}
 }
 void tac_func(string func,int beg=1){
 	if(beg){
 		string cc = func + ":";
-		commands.push_back(cc);
+		mpfuncf[func]=addr;
+		if(mpfunc[func].size()){
+			for(int i=0;i<mpfunc[func].size();++i){
+				commands[mpfunc[func][i]]+=to_string(addr)+";";
+			}
+		}
+		commands.push_back(cc);++addr;
 		cc = "beginFunc ;";
-		commands.push_back(cc);
+		commands.push_back(cc);++addr;
 	}
 	else{
 		string cc = "endFunc ;";
-		commands.push_back(cc);	
+		commands.push_back(cc);++addr;	
 	}
 }
 void tac_exp(){
 	vector<string>a;
-	
+	if(ans.size()==1){
+			string y = ans[0];
+			string t = "_t" + to_string(j);
+		  	string cc = t + " = " + y +" > 0;"; 
+		  	commands.push_back(cc);++addr;
+		  	y = t;
+		  	last = t;
+		  	++j;
+		  	return;
+	}
 	for(int i=0;i<ans.size();++i){
 		a.push_back(ans[i]);
 		if(is_operator(a.back())){
@@ -194,7 +234,7 @@ void tac_exp(){
 		  		string y = a.back();a.pop_back();	
 				string cc = y +" "+ op +" "+ x +";";
 				a.push_back(y);
-				commands.push_back(cc);
+				commands.push_back(cc);++addr;
 				continue;
 			}
 			// cout << a.back() << " ";
@@ -206,7 +246,7 @@ void tac_exp(){
 		  			string t = "_t" + to_string(j);
 		//  			cout << t << " ";
 		  			string cc = t + " = " + x +";"; 
-		  			commands.push_back(cc);
+		  			commands.push_back(cc);++addr;
 		  			x = t;
 		  			++j;
 		  		}
@@ -214,7 +254,7 @@ void tac_exp(){
 		  			string t = "_t" + to_string(j);
 		//  			cout << t << " ";
 		  			string cc = t + " = " + y +";"; 
-		  			commands.push_back(cc);
+		  			commands.push_back(cc);++addr;
 		  			y = t;
 		  			++j;
 		  		}	
@@ -223,13 +263,23 @@ void tac_exp(){
 	//	  	cout << t << " ";
 		  	a.push_back(t);
 		 	string cc = t + " = " + y +" "+ op +" "+ x +";"; 
-		  	commands.push_back(cc);
+		  	commands.push_back(cc);++addr;
 		  	last = t;
 		  	++j;
 		}
 	}
 	ans.clear();
 	cout << endl;
+}
+void print_tact(){
+	for(int i=0;i<commands.size();++i){
+		reverse(commands[i].begin(),commands[i].end());
+		char tt1 = *commands[i].begin();
+		reverse(commands[i].begin(),commands[i].end());
+		if(tt1==':'){
+
+		}
+	}
 }
 void print_tac(){
 	cout << "\n___________________________________________";
@@ -239,9 +289,11 @@ void print_tac(){
 		char tt1 = *commands[i].begin();
 		reverse(commands[i].begin(),commands[i].end());
 		if(tt1==':')
-			cout << commands[i] << endl;
-		else
-			cout << "\t" << commands[i] << endl;
+			cout << address << ") " << commands[i] << endl;
+		else{
+			cout << "\t" << address << ") " << commands[i] << endl;
+		}
+		++address;
 	}
 	cout << "_____________________________________________\n\n";
 //	commands.clear();

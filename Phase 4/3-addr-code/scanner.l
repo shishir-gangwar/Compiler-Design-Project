@@ -46,6 +46,9 @@ s_operator     "["|"]"|","|":"|"{"|"}"|"("|")"|"="|[-+*%/<>&|^!]
 {space}                 {charcount+=1;}
 {next_line}             {charcount=0;lineno++;}
 {header}                {charcount+=yyleng;;}
+"long long int"			{charcount+=yyleng;yylval.s = (char*)malloc(sizeof(yytext));strcpy(yylval.s,yytext);str = yytext;return TYPE;}
+"long int"				{charcount+=yyleng;yylval.s = (char*)malloc(sizeof(yytext));strcpy(yylval.s,yytext);str = yytext;return TYPE;}
+"short int"				{charcount+=yyleng;yylval.s = (char*)malloc(sizeof(yytext));strcpy(yylval.s,yytext);str = yytext;return TYPE;}
 {type}                  {charcount+=yyleng;yylval.s = (char*)malloc(sizeof(yytext));strcpy(yylval.s,yytext);str = yytext;return TYPE;}
 {storage}               {charcount+=yyleng;yylval.s = (char*)malloc(sizeof(yytext));strcpy(yylval.s,yytext);return STORAGE;}
 {qualifier}             {charcount+=yyleng;yylval.s = (char*)malloc(sizeof(yytext));strcpy(yylval.s,yytext);return QUALIFIER;}

@@ -157,7 +157,7 @@ stmt:            compstmt
 	dowhilestmt:     DO {$<i>1=tac_while(1);} compstmt WHILE '(' expt ')' {tac_while(2);tac_while(3,$<i>1);} ';'
 	;
 
-	ifstmt:           IF '(' expt ')'  {tac_if(1);} stmt {tac_if(0);}
+	ifstmt:           IF '(' expt ')'  {$<i>1=tac_if(1);} stmt {tac_if(0,$<i>1);}
 	;
 
 	returnstmt:      RETURN {checkReturn(1);} ';' 	
